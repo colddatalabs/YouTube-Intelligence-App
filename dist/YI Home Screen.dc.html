@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="vyro.css">
+</helmet>
+<div style="flex:1;min-width:0;height:100%;overflow:auto;background:var(--bg-default);color:var(--text-default);font-family:var(--font-body);display:flex;flex-direction:column">
+  <div style="display:flex;align-items:center;gap:12px;height:64px;padding:0 32px;border-bottom:1px solid var(--border-default);flex:none">
+    <span style="font:600 13px/1 var(--font-body)">Home</span>
+  </div>
+  <div style="padding:40px 32px 48px;display:flex;flex-direction:column;gap:40px;max-width:1040px">
+    <div style="font:700 30px/1.2 var(--font-display);letter-spacing:-0.02em">YouTube Intelligence</div>
+    <sc-for list="{{ buckets }}" as="b" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="font:700 17px/1.2 var(--font-display);letter-spacing:-0.01em;color:var(--text-default)">{{ b.label }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+          <sc-for list="{{ b.items }}" as="it" hint-placeholder-count="3">
+            <div onClick="{{ it.pick }}" style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;background:var(--bg-subtle);border:1px solid var(--border-default);cursor:pointer;box-sizing:border-box" style-hover="background:var(--bg-muted)">
+              <div style="width:40px;height:40px;border-radius:12px;background:var(--bg-muted);display:grid;place-items:center;flex:none;color:#00ABF4">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ it.icon }}"></path></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                <div style="font:600 14px/1.25 var(--font-body)">{{ it.label }}</div>
+                <div style="font:400 12px/1.45 var(--font-body);color:var(--text-subtle)">{{ it.desc }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;onNavigate&quot;:{&quot;editor&quot;:null,&quot;default&quot;:null,&quot;tsType&quot;:&quot;(id: string) =&gt; void&quot;}}">
+const I = {
+  upload: "M16 16l-4-4-4 4M12 12v9M20.4 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 3 15.3",
+  activity: "M22 12h-4l-3 9L9 3l-3 9H2",
+  playsq: "M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM10 8l6 4-6 4z",
+  phone: "M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM12 18h.01",
+  calendar: "M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM16 2v4M8 2v4M3 10h18",
+  book: "M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z",
+  image: "M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM21 15l-5-5L5 21M10 8.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0",
+  flask: "M9 3h6M10 3v6.3L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9.3V3M7 15h10",
+  split: "M16 3h5v5M8 3H3v5M21 3l-7 7v11M3 3l7 7v11",
+  crosshair: "M22 12a10 10 0 1 1-20 0a10 10 0 1 1 20 0M22 12h-4M6 12H2M12 6V2M12 22v-4",
+  users: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 7a4 4 0 1 1-8 0a4 4 0 1 1 8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+};
+const B = [
+  { label: "Diagnostics", items: [
+    { id: "upload-diagnostics", label: "Upload Diagnostics", desc: "First hours vs expected", icon: I.upload },
+    { id: "retention-analysis", label: "Retention Analysis", desc: "Where viewers drop and why", icon: I.activity } ] },
+  { label: "Reports", items: [
+    { id: "video-aar", label: "Video AAR", desc: "Long-form after-action review", icon: I.playsq },
+    { id: "shorts-aar", label: "Shorts AAR", desc: "Shorts after-action review", icon: I.phone },
+    { id: "monthly-reports", label: "Channel Reports", desc: "Monthly channel roll-up", icon: I.calendar },
+    { id: "aar-knowledge-base", label: "AAR Knowledge Base", desc: "Lessons from past reports", icon: I.book } ] },
+  { label: "Creative Testing", items: [
+    { id: "thumbnail-testing", label: "Thumbnail A/B Tests", desc: "Lift from every thumbnail change", icon: I.image },
+    { id: "shorts-ab-tests", label: "Shorts A/B Tests", desc: "Shorts variants head to head", icon: I.flask },
+    { id: "video-ab-tests", label: "Video A/B Tests", desc: "Hooks, pacing, and edits", icon: I.split } ] },
+  { label: "External Intelligence", items: [
+    { id: "outliers-lab", label: "Outliers Lab", desc: "Videos beating their channel baseline", icon: I.crosshair },
+    { id: "creator-thumbnail-tests", label: "Creator Thumbnail Tests", desc: "Thumbnail swaps across YouTube", icon: I.users } ] }
+];
+class Component extends DCLogic {
+  renderVals() {
+    const nav = this.props.onNavigate;
+    return { buckets: B.map(b => ({ ...b, items: b.items.map(it => ({ ...it, pick: () => nav && nav(it.id) })) })) };
+  }
+}
+</script>
+</body>
+</html>

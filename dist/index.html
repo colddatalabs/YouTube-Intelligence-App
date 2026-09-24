@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="vyro.css">
+  <style>body{margin:0;background:#EDEEF0;font-family:"Poppins",system-ui,sans-serif}a{color:#00ABF4}a:hover{color:#0090CF}</style>
+</helmet>
+<div class="{{ themeClass }}" data-screen-label="YouTube Intelligence" style="width:100%;height:100vh;min-height:720px;display:flex;background:var(--bg-default);color:var(--text-default)">
+  <dc-import name="YI Sidebar" active="{{ active }}" collapsible="{{ true }}" theme="{{ theme }}" on-theme-change="{{ setTheme }}" on-navigate="{{ navigate }}" hint-size="264px,100%"></dc-import>
+  <div style="flex:1;min-width:0;height:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:100%">
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <dc-import name="YI Home Screen" on-navigate="{{ navigate }}" hint-size="100%,100%" style="width:100%;height:100%;display:flex"></dc-import>
+  </sc-if>
+  <sc-if value="{{ isAAR }}" hint-placeholder-val="{{ false }}">
+    <dc-import name="YI Video AAR Screen" hint-size="100%,100%" style="width:100%;height:100%;display:flex"></dc-import>
+  </sc-if>
+  <sc-if value="{{ isUpload }}" hint-placeholder-val="{{ false }}">
+    <iframe src="tools/upload-diagnostics.html" title="Upload Diagnostics" style="width:100%;height:100%;border:0;display:block;background:#F7F8F9"></iframe>
+  </sc-if>
+  <sc-if value="{{ isTool }}" hint-placeholder-val="{{ false }}">
+    <iframe key="{{ toolKey }}" src="{{ toolSrc }}" title="{{ toolLabel }}" style="width:100%;height:100%;border:0;display:block;background:var(--bg-default)"></iframe>
+  </sc-if>
+  <sc-if value="{{ isDev }}" hint-placeholder-val="{{ false }}">
+    <div style="width:100%;height:100%;min-width:0;background:var(--bg-default);color:var(--text-default);font-family:var(--font-body);display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:12px;height:64px;padding:0 32px;border-bottom:1px solid var(--border-default);flex:none">
+        <span style="font:500 13px/1 var(--font-body);color:var(--text-subtle)">{{ devGroup }}</span>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><path d="M9 18l6-6-6-6"></path></svg>
+        <span style="font:600 13px/1 var(--font-body)">{{ devLabel }}</span>
+      </div>
+      <div style="flex:1;display:grid;place-items:center;padding:32px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;width:100%;max-width:480px">
+          <div style="font:700 22px/1.25 var(--font-display);letter-spacing:-0.02em;white-space:nowrap">{{ devLabel }}</div>
+          <div style="font:400 14px/1.55 var(--font-body);color:var(--text-subtle)">Mockup in development.</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'dark' | 'light'&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;section&quot;:&quot;Appearance&quot;},&quot;start&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;upload-diagnostics&quot;,&quot;retention-analysis&quot;,&quot;video-aar&quot;,&quot;shorts-aar&quot;,&quot;monthly-reports&quot;,&quot;thumbnail-testing&quot;,&quot;creator-thumbnail-tests&quot;,&quot;shorts-ab-tests&quot;],&quot;section&quot;:&quot;Navigation&quot;}}">
+const LABELS = {
+  "upload-diagnostics": ["Diagnostics", "Upload Diagnostics"], "video-aar": ["Reports", "Video AAR"], "retention-analysis": ["Diagnostics", "Retention Analysis"],
+  "shorts-aar": ["Reports", "Shorts AAR"], "monthly-reports": ["Reports", "Channel Reports"], "aar-knowledge-base": ["Reports", "AAR Knowledge Base"],
+  "thumbnail-testing": ["Creative Testing", "Thumbnail A/B Tests"], "shorts-ab-tests": ["Creative Testing", "Shorts A/B Tests"], "video-ab-tests": ["Creative Testing", "Video A/B Tests"],
+  "outliers-lab": ["External Intelligence", "Outliers Lab"], "creator-thumbnail-tests": ["External Intelligence", "Creator Thumbnail Tests"]
+};
+const TOOLS = { "upload-diagnostics": "tools/upload-diagnostics.html", "retention-analysis": "tools/retention-analysis.html", "video-aar": "tools/video-aar.html", "shorts-aar": "tools/shorts-aar.html", "monthly-reports": "tools/channel-reports.html", "thumbnail-testing": "tools/thumbnail-ab-tests.html", "creator-thumbnail-tests": "tools/creator-thumbnail-tests.html", "outliers-lab": "https://outlier-dashboard-gamma-nine.vercel.app/" };
+class Component extends DCLogic {
+  state = { theme: null, active: null };
+  componentDidUpdate() {
+    const theme = this.state.theme ?? this.props.theme ?? "light";
+    document.querySelectorAll("iframe").forEach(f => { try { f.contentWindow.postMessage({ type: "yi-theme", theme }, "*"); } catch (e) {} });
+  }
+  renderVals() {
+    const theme = this.state.theme ?? this.props.theme ?? "light";
+    const active = this.state.active ?? this.props.start ?? "home";
+    const dev = LABELS[active] || ["", ""];
+    return {
+      theme, themeClass: theme === "dark" ? "theme-dark" : "", setTheme: (t) => this.setState({ theme: t }),
+      active, navigate: (id) => this.setState({ active: id }),
+      isHome: active === "home", isTool: !!TOOLS[active], isDev: active !== "home" && !TOOLS[active],
+      toolKey: active + "-" + theme, toolSrc: TOOLS[active] ? (TOOLS[active].startsWith("http") ? TOOLS[active] : TOOLS[active] + "?theme=" + theme) : "", toolLabel: dev[1],
+      devGroup: dev[0], devLabel: dev[1]
+    };
+  }
+}
+</script>
+</body>
+</html>
